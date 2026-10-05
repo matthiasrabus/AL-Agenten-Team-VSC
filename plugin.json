@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "al-agent-team",
+  "description": "Business Central AL delivery team: orchestrator plus requirements, design, test planning, TDD implementation, documentation, quality review, delivery and container provisioning agents with a written feature dossier per feature.",
+  "version": "1.0.0",
+  "author": {
+    "name": "B.i.Team"
+  },
+  "keywords": ["business-central", "al", "tdd", "azure-devops", "agents"]
+}
