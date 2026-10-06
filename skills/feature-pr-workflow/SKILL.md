@@ -1,6 +1,6 @@
 ---
 name: feature-pr-workflow
-description: 'Automates feature branch creation, commit, push, and Azure DevOps PR creation with auto-complete. Use when: committing work, creating PR, shipping feature, linking user stories, automating git workflow.'
+description: 'Automates feature branch creation, commit under the correct git identity, push, and Azure DevOps PR creation (with configurable target branch and auto-complete). Use when: committing work, creating PR, shipping feature, linking user stories, automating git workflow.'
 argument-hint: 'Optional: PR title or user story number'
 ---
 

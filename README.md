@@ -49,10 +49,9 @@ Die Agenten nutzen Werkzeuge, die dieses Plugin **nicht** mitbringt:
 
 | Skill | Zweck |
 |---|---|
-| `feature-pr-workflow` | Feature-Branch, Commit, Push und Azure-DevOps-PR mit Auto-Complete (vom AL Delivery genutzt) |
-| `git-branch-commit-pr-workflow` | Dasselbe mit korrekter Git-Identität und wählbarem Zielbranch |
+| `feature-pr-workflow` | Feature-Branch, Commit unter der korrekten Git-Identität, Push und Azure-DevOps-PR mit wählbarem Zielbranch und Auto-Complete (vom AL Delivery genutzt) |
 
-Beide enthalten Beispiele mit B.i.Team-Organisation, Projekt und Repo-Namen. Für andere Teams die Standardwerte im Skill anpassen.
+Das Skill enthält Beispiele mit B.i.Team-Organisation, Projekt und Repo-Namen. Für andere Teams die Standardwerte im Skill anpassen.
 
 ## Bekannte Einschränkungen
 
