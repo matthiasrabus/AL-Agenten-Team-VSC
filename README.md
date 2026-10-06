@@ -39,6 +39,7 @@ Dem **AL Orchestrator** die Anforderung oder die Work-Item-Nummer nennen. Er leg
 Die Agenten nutzen Werkzeuge, die dieses Plugin **nicht** mitbringt:
 
 - **AL Language Extension** (`al_build`, `al_publish`, `al_downloadsymbols`, `al_symbolsearch`, Translation Center)
+- **AL Tool** (`al`, NuGet-Paket `Microsoft.Dynamics.BusinessCentral.Development.Tools`, `dotnet tool install --global ...`) als Compile-Fallback außerhalb des Workspaces; `al runtests` und `--errorlogdirectory` gibt es erst ab BC 28
 - **AL Object ID Ninja** (Objekt-IDs reservieren)
 - **COSMO Alpaca** (Container-Werkzeuge, nur für den Container Provisioner)
 - **Azure DevOps MCP** (`microsoft/azure-devops-mcp`) für Work Items und Pull Requests
