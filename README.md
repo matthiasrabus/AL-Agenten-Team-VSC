@@ -43,7 +43,16 @@ Die Agenten nutzen Werkzeuge, die dieses Plugin **nicht** mitbringt:
 - **COSMO Alpaca** (Container-Werkzeuge, nur für den Container Provisioner)
 - **Azure DevOps MCP** (`microsoft/azure-devops-mcp`) für Work Items und Pull Requests
 - **BCQuality** (Agent-Plugin) und der **AL Performance Analyzer** (MCP `al-performance`) für den Quality Reviewer
-- Benutzer-Skills in `~/.copilot/skills`, vor allem `feature-pr-workflow` (Branch-Namen, Git-Identität, PR) und die `bc-*`-Skills der AL Copilot Skills Collection
+- Optional: die `bc-*`-Skills der AL Copilot Skills Collection (VS-Code-Erweiterung von Fernando Artigas Alfonso, MIT-Lizenz). Sie sind **nicht** im Plugin enthalten, die Agenten nennen sie nur, wenn sie installiert sind.
+
+## Enthaltene Skills
+
+| Skill | Zweck |
+|---|---|
+| `feature-pr-workflow` | Feature-Branch, Commit, Push und Azure-DevOps-PR mit Auto-Complete (vom AL Delivery genutzt) |
+| `git-branch-commit-pr-workflow` | Dasselbe mit korrekter Git-Identität und wählbarem Zielbranch |
+
+Beide enthalten Beispiele mit B.i.Team-Organisation, Projekt und Repo-Namen. Für andere Teams die Standardwerte im Skill anpassen.
 
 ## Bekannte Einschränkungen
 
