@@ -4,19 +4,49 @@ Agent Plugin für GitHub Copilot in VS Code: ein Team von Agenten, das eine Busi
 
 ## Agenten
 
-| Agent | Aufgabe | Artefakt |
-|---|---|---|
-| AL Orchestrator | Einstiegspunkt, steuert Phasen und Gates, hält `00-overview.md` | `00-overview.md` |
-| AL Requirements Analyst | Anforderung schärfen, Ist-Analyse im Code | `01-requirements.md` |
-| AL Solution Architect | Technisches Design (Objekte, Events, Datenmodell, Übersetzungen) | `02-design.md` |
-| AL Test Planner | Testplan (GIVEN/WHEN/THEN, Seams, Ausführungsvoraussetzungen) | `03-test-plan.md` |
-| AL TDD Implementer | Test-first in drei getrennten Modi `red`, `green`, `refactor` | `04-implementation-log.md` |
-| AL Documentation Writer | Anwenderdokumentation, Release Note, Testliste | `05-user-documentation.md` |
-| AL Quality Reviewer | Review mit BCQuality und AL Performance Analyzer | `06-quality-review.md` |
-| AL Delivery | Branch, Commits, Squash, Push und Azure-DevOps-PR (`branch`, `commit`, `deliver`) | `07-delivery.md` |
-| AL Container Provisioner | BC-Sandbox-Container über COSMO Alpaca prüfen, starten, anlegen | - |
+| Agent                    | Aufgabe                                                                           | Artefakt                   |
+| ------------------------ | --------------------------------------------------------------------------------- | -------------------------- |
+| AL Orchestrator          | Einstiegspunkt, steuert Phasen und Gates, hält `00-overview.md`                   | `00-overview.md`           |
+| AL Requirements Analyst  | Anforderung schärfen, Ist-Analyse im Code                                         | `01-requirements.md`       |
+| AL Solution Architect    | Technisches Design (Objekte, Events, Datenmodell, Übersetzungen)                  | `02-design.md`             |
+| AL Test Planner          | Testplan (GIVEN/WHEN/THEN, Seams, Ausführungsvoraussetzungen)                     | `03-test-plan.md`          |
+| AL TDD Implementer       | Test-first in drei getrennten Modi `red`, `green`, `refactor`                     | `04-implementation-log.md` |
+| AL Documentation Writer  | Anwenderdokumentation, Release Note, Testliste                                    | `05-user-documentation.md` |
+| AL Quality Reviewer      | Review mit BCQuality und AL Performance Analyzer                                  | `06-quality-review.md`     |
+| AL Delivery              | Branch, Commits, Squash, Push und Azure-DevOps-PR (`branch`, `commit`, `deliver`) | `07-delivery.md`           |
+| AL Container Provisioner | BC-Sandbox-Container über COSMO Alpaca prüfen, starten, anlegen                   | -                          |
 
 Ablauf: Requirements, Design, Test Plan, Implementierung (RED, GREEN, optional Refactor), Dokumentation, Quality Review, Delivery. Zwei Gates werden nie übersprungen: vor der Implementierung und vor dem Push/PR.
+
+## Skills
+
+Detailregeln liegen in Skills und werden von den Agenten erst an der passenden Stelle gelesen. Das hält die Agent-Dateien klein. Rollen, Modi, Ausgabe-Templates und die harten Sicherheitsregeln (kein Push im `commit`-Modus, die zwei Gates) bleiben in den Agent-Dateien.
+
+| Skill                        | Inhalt                                                                             | Genutzt von                           |
+| ---------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------- |
+| `al-test-conventions`        | Testdesign, Testbudget, False-RED-Klassifikation, Handler, Runner, Setup-Pitfalls  | Test Planner, TDD Implementer (`red`) |
+| `al-coding-conventions`      | CRS-Namen, Object Ninja, Übersetzungen, Page-DRYness, AL-Patterns                  | TDD Implementer (`green`, `refactor`) |
+| `al-build-publish-pipeline`  | Build, Analyzer, Fallbacks, Publish-Reihenfolge, Sandbox-Probleme, BC < 28         | TDD Implementer                       |
+| `al-test-debugging-playbook` | Hartnäckige Testfehler, Recherche vor Trial-and-Error, Rundenbudget, Regressionen  | TDD Implementer, Orchestrator         |
+| `al-design-heuristics`       | Symbole prüfen, No.-Series-Umleitung, Schlüsselkollision, Event-Contracts          | Solution Architect, Quality Reviewer  |
+| `al-feature-addendum`        | Folgeänderung an ausgeliefertem Feature, Branch-Wiederverwendung, Proportionalität | Orchestrator                          |
+| `al-delivery-deliver`        | Zielbranch prüfen, Squash, Multi-Repo, PR und Auto-Complete                        | Delivery (`deliver`)                  |
+| `feature-pr-workflow`        | Branch-Namen, Git-Identität, PR-Erstellung                                         | Delivery                              |
+
+## Hooks (Preview)
+
+Ein Skript ([scripts/al-hook.cjs](scripts/al-hook.cjs), benötigt Node.js) erzwingt Regeln, die vorher nur als Prompt-Text standen. Die Hooks stehen im Frontmatter der Agenten und laufen nur, solange der jeweilige Agent aktiv ist (auch als Unter-Agent). Sie gelten nur für den lokalen Harness, nicht für Copilot-CLI- oder Cloud-Sitzungen, und brauchen `chat.useHooks` und einen vertrauenswürdigen Workspace.
+
+| Agent                                             | Hook                 | Wirkung                                                                                                                                                    |
+| ------------------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AL Delivery                                       | `PreToolUse`         | `git push` fragt immer nach, Force-Push, `--no-verify`, `az`-CLI und `git add *.app` werden blockiert, pauschales `git add` und `reset --hard` fragen nach |
+| AL Orchestrator                                   | `PreToolUse`         | darf nur `00-overview.md` bearbeiten, kein schreibendes Git                                                                                                |
+| AL Quality Reviewer                               | `PreToolUse`, `Stop` | kein `fix_al_file`/`fix_al_workspace`, nur `06-quality-review.md` bearbeiten; `06` muss einen Abschnitt `## Outcome` haben                                 |
+| AL Container Provisioner                          | `PreToolUse`         | nur `launch.json` bearbeiten, kein schreibendes Git, kein `docker run`                                                                                     |
+| Requirements, Architect, Test Planner, Doc Writer | `Stop`               | das Artefakt (`01`, `02`, `03`, `05`) muss existieren und die Pflichtabschnitte enthalten                                                                  |
+| TDD Implementer                                   | `Stop`               | der GREEN-Abschnitt braucht Evidenz, und im geänderten AL-Code darf kein `Assert.IsTrue(true` stehen                                                       |
+
+Der `Stop`-Hook blockiert pro Beendigung höchstens einmal (`stop_hook_active`). Das Skript läuft bei internen Fehlern ohne Blockade weiter. Entscheidungen stehen in `%TEMP%\al-agent-team-hooks.log`. Mit der Umgebungsvariable `AL_HOOK_DEBUG=1` wird jeder Aufruf protokolliert, so lassen sich echte Tool-Namen und Eingaben prüfen.
 
 ## Installation
 
@@ -48,8 +78,8 @@ Die Agenten nutzen Werkzeuge, die dieses Plugin **nicht** mitbringt:
 
 ## Enthaltene Skills
 
-| Skill | Zweck |
-|---|---|
+| Skill                 | Zweck                                                                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `feature-pr-workflow` | Feature-Branch, Commit unter der korrekten Git-Identität, Push und Azure-DevOps-PR mit wählbarem Zielbranch und Auto-Complete (vom AL Delivery genutzt) |
 
 Das Skill enthält Beispiele mit B.i.Team-Organisation, Projekt und Repo-Namen. Für andere Teams die Standardwerte im Skill anpassen.
