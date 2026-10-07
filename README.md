@@ -35,18 +35,23 @@ Detailregeln liegen in Skills und werden von den Agenten erst an der passenden S
 
 ## Hooks (Preview)
 
-Ein Skript ([scripts/al-hook.cjs](scripts/al-hook.cjs), benötigt Node.js) erzwingt Regeln, die vorher nur als Prompt-Text standen. Die Hooks stehen im Frontmatter der Agenten und laufen nur, solange der jeweilige Agent aktiv ist (auch als Unter-Agent). Sie gelten nur für den lokalen Harness, nicht für Copilot-CLI- oder Cloud-Sitzungen, und brauchen `chat.useHooks` und einen vertrauenswürdigen Workspace.
+Ein Skript ([scripts/al-hook.cjs](scripts/al-hook.cjs), benötigt Node.js) erzwingt Regeln, die vorher nur als Prompt-Text standen. Zwei Stellen definieren die Hooks:
 
-| Agent                                             | Hook                 | Wirkung                                                                                                                                                    |
-| ------------------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AL Delivery                                       | `PreToolUse`         | `git push` fragt immer nach, Force-Push, `--no-verify`, `az`-CLI und `git add *.app` werden blockiert, pauschales `git add` und `reset --hard` fragen nach |
-| AL Orchestrator                                   | `PreToolUse`         | darf nur `00-overview.md` bearbeiten, kein schreibendes Git                                                                                                |
-| AL Quality Reviewer                               | `PreToolUse`, `Stop` | kein `fix_al_file`/`fix_al_workspace`, nur `06-quality-review.md` bearbeiten; `06` muss einen Abschnitt `## Outcome` haben                                 |
-| AL Container Provisioner                          | `PreToolUse`         | nur `launch.json` bearbeiten, kein schreibendes Git, kein `docker run`                                                                                     |
-| Requirements, Architect, Test Planner, Doc Writer | `Stop`               | das Artefakt (`01`, `02`, `03`, `05`) muss existieren und die Pflichtabschnitte enthalten                                                                  |
-| TDD Implementer                                   | `Stop`               | der GREEN-Abschnitt braucht Evidenz, und im geänderten AL-Code darf kein `Assert.IsTrue(true` stehen                                                       |
+- **Plugin-weit** in [com.github.copilot/hooks/hooks.json](com.github.copilot/hooks/hooks.json): gilt für alle Agenten und Sitzungen, solange das Plugin aktiv ist.
+- **Pro Agent** im Frontmatter (`hooks:`) der Agent-Datei: läuft nur, solange dieser Agent aktiv ist (auch als Unter-Agent).
 
-Der `Stop`-Hook blockiert pro Beendigung höchstens einmal (`stop_hook_active`). Das Skript läuft bei internen Fehlern ohne Blockade weiter. Entscheidungen stehen in `%TEMP%\al-agent-team-hooks.log`. Mit der Umgebungsvariable `AL_HOOK_DEBUG=1` wird jeder Aufruf protokolliert, so lassen sich echte Tool-Namen und Eingaben prüfen.
+Die Hooks gelten nur für den lokalen Harness, nicht für Copilot-CLI- oder Cloud-Sitzungen, und brauchen `chat.useHooks` und einen vertrauenswürdigen Workspace.
+
+| Wo                                    | Hook           | Wirkung                                                                                                                                                    |
+| ------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hooks.json` (alle)                   | `PreToolUse`   | `git push` fragt immer nach, Force-Push und `--no-verify` werden blockiert, `git add *.app` ebenfalls                                                      |
+| `hooks.json` (Unter-Agenten)          | `SubagentStop` | Requirements, Architect, Test Planner, Doc Writer und Quality Reviewer: Artefakt (`01`, `02`, `03`, `05`, `06`) muss existieren und die Pflichtabschnitte enthalten. TDD Implementer: der GREEN-Abschnitt braucht Evidenz, und im geänderten AL-Code darf kein `Assert.IsTrue(true` stehen. Der Agent wird über `agent_type` erkannt |
+| AL Delivery                           | `PreToolUse`   | zusätzlich: `az`-CLI blockiert, pauschales `git add` und `reset --hard` fragen nach, keine `.al`-Bearbeitung                                               |
+| AL Orchestrator                       | `PreToolUse`   | darf nur `00-overview.md` bearbeiten, kein schreibendes Git                                                                                                |
+| AL Quality Reviewer                   | `PreToolUse`   | kein `fix_al_file`/`fix_al_workspace`, nur `06-quality-review.md` bearbeiten                                                                               |
+| AL Container Provisioner              | `PreToolUse`   | nur `launch.json` bearbeiten, kein schreibendes Git, kein `docker run`                                                                                     |
+
+Der Stop-Check blockiert pro Beendigung höchstens einmal (`stop_hook_active`). Das Skript läuft bei internen Fehlern ohne Blockade weiter. Entscheidungen stehen in `%TEMP%\al-agent-team-hooks.log`. Mit der Umgebungsvariable `AL_HOOK_DEBUG=1` wird jeder Aufruf protokolliert, so lassen sich echte Tool-Namen und Eingaben prüfen.
 
 ## Installation
 

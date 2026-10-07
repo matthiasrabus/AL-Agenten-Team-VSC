@@ -94,21 +94,26 @@ const onlyFiles = (pattern, label) => ({ paths }) => {
   return bad.length ? ['deny', `This agent may only edit ${label}. Blocked: ${bad.join(', ')}`] : null;
 };
 
+const pushRule = ({ cmd }) => {
+  if (/--no-verify/.test(cmd) && /\bgit\b/.test(cmd)) return ['deny', 'Never bypass git hooks (--no-verify).'];
+  if (/\bgit\b[^\n;|&]*\bpush\b/.test(cmd)) {
+    if (/--force|--force-with-lease|(^|\s)-f(\s|$)|--delete/.test(cmd)) return ['deny', 'Force-push or remote branch deletion is not allowed.'];
+    return ['ask', 'Push is only allowed after the user\'s explicit go-ahead for the push and PR. Confirm that you approved it.'];
+  }
+  return null;
+};
+
+const appStagingRule = ({ cmd }) =>
+  /\bgit\s+add\b[^\n;|&]*\.app\b/.test(cmd) ? ['deny', 'Never stage build output (*.app).'] : null;
+
 const PROFILES = {
+  global: [pushRule, appStagingRule],
   delivery: [
-    ({ cmd }) => {
-      if (/--no-verify/.test(cmd) && /\bgit\b/.test(cmd)) return ['deny', 'Never bypass git hooks (--no-verify).'];
-      if (/\bgit\b[^\n;|&]*\bpush\b/.test(cmd)) {
-        if (/--force|--force-with-lease|(^|\s)-f(\s|$)|--delete/.test(cmd)) return ['deny', 'Force-push or remote branch deletion is not allowed.'];
-        return ['ask', 'Push is only allowed in deliver mode after the user\'s explicit go-ahead for the push and PR. Confirm that you approved it.'];
-      }
-      return null;
-    },
+    pushRule,
     ({ cmd }) =>
       /(^|[\s;|&(])az\s+(repos|devops|pipelines|boards|login|account)\b/.test(cmd)
         ? ['deny', 'Use the azure-devops MCP tools for Azure DevOps, never the az CLI.'] : null,
-    ({ cmd }) =>
-      /\bgit\s+add\b[^\n;|&]*\.app\b/.test(cmd) ? ['deny', 'Never stage build output (*.app).'] : null,
+    appStagingRule,
     ({ cmd }) =>
       /\bgit\s+add\b\s+(-A|--all|\.)(\s|$|[;|&])/.test(cmd)
         ? ['ask', 'Blanket staging may include unrelated WIP of the user. Stage only the files of this phase.'] : null,
@@ -184,8 +189,8 @@ function trivialAsserts(cwd) {
   const out = [];
   let root;
   try {
-    root = cp.execFileSync('git', ['-C', cwd, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-    const status = cp.execFileSync('git', ['-C', root, 'status', '--porcelain', '-uall'], { encoding: 'utf8' });
+    root = cp.execFileSync('git', ['-C', cwd, 'rev-parse', '--show-toplevel'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    const status = cp.execFileSync('git', ['-C', root, 'status', '--porcelain', '-uall'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
     for (const line of status.split('\n')) {
       const file = line.slice(3).trim();
       if (!/\.al$/i.test(file)) continue;
@@ -220,9 +225,21 @@ const STOP_CHECKS = {
   reviewer: dir => artifact(dir, '06-quality-review.md', { min: 200, headings: ['## Outcome'] }),
 };
 
+const AGENT_PROFILE = [
+  [/requirements/i, 'requirements'],
+  [/architect/i, 'architect'],
+  [/test.?planner/i, 'planner'],
+  [/implementer/i, 'implementer'],
+  [/documentation|doc.?writer/i, 'docs'],
+  [/quality.?reviewer/i, 'reviewer'],
+];
+
 function stop(ev) {
   if (ev.stop_hook_active) return;
-  const check = STOP_CHECKS[profile];
+  const key = profile === 'auto'
+    ? (AGENT_PROFILE.find(([re]) => re.test(String(ev.agent_type || ''))) || [])[1]
+    : profile;
+  const check = STOP_CHECKS[key];
   if (!check) return;
   const cwd = ev.cwd || process.cwd();
   const dir = newestDossier([cwd, process.cwd()]);
