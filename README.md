@@ -30,6 +30,7 @@ Detailregeln liegen in Skills und werden von den Agenten erst an der passenden S
 | `al-test-debugging-playbook` | Hartnäckige Testfehler, Recherche vor Trial-and-Error, Rundenbudget, Regressionen  | TDD Implementer, Orchestrator         |
 | `al-design-heuristics`       | Symbole prüfen, No.-Series-Umleitung, Schlüsselkollision, Event-Contracts          | Solution Architect, Quality Reviewer  |
 | `al-feature-addendum`        | Folgeänderung an ausgeliefertem Feature, Branch-Wiederverwendung, Proportionalität | Orchestrator                          |
+| `al-prism-analysis`          | Prism-for-AL-MCP: Graph-Fragen statt grep, Aufrufregeln, Lizenz-Fallback           | Analyst, Architect, Implementer (`red`), Reviewer |
 | `al-delivery-deliver`        | Zielbranch prüfen, Squash, Multi-Repo, PR und Auto-Complete                        | Delivery (`deliver`)                  |
 | `feature-pr-workflow`        | Branch-Namen, Git-Identität, PR-Erstellung                                         | Delivery                              |
 

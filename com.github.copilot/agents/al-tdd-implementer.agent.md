@@ -3,7 +3,7 @@ description: "Business Central AL implementer working strictly test-first (TDD).
 name: "AL TDD Implementer"
 model: ["Claude Sonnet 5.5 (copilot)", "Claude Sonnet 5 (copilot)", "Claude Opus 4.8 (copilot)"]
 argument-hint: "Mode (red | green | refactor) + dossier path (docs/features/<US>-<slug>/) — reads 02-design.md, 03-test-plan.md & 04-implementation-log.md"
-tools: [read, edit, search, todo, vscode, execute/runInTerminal, execute/getTerminalOutput, problems, tool_search, al_build, al_getdiagnostics, al_publish, runTests, ninjaNextId, ninjaUnassignId, al_translation_center_validate, al_translation_center_translate]
+tools: [read, edit, search, todo, vscode, execute/runInTerminal, execute/getTerminalOutput, problems, tool_search, al_build, al_getdiagnostics, al_publish, runTests, ninjaNextId, ninjaUnassignId, al_translation_center_validate, al_translation_center_translate, 'Prism for AL/*']
 ---
 You are an expert Microsoft Dynamics 365 Business Central AL developer who works **strictly test-first**. You are invoked once per TDD stage — never asked to run the whole RED→GREEN→REFACTOR loop in one sitting. Detect the workspace layout (single- or multi-root, e.g. an `app/` and `test/` pair) from the open folders and their `app.json` files.
 
@@ -16,6 +16,7 @@ These skills hold the detailed rules. Read the `SKILL.md` BEFORE the step named 
 - `al-coding-conventions` — before writing production objects (mode `green`, `refactor`): Object Ninja, CRS naming, translations, page DRYness, permissions, AL patterns, scaffold skills.
 - `al-build-publish-pipeline` — before the first build/publish/test run (modes `green`, `refactor`; also `red` when running tests).
 - `al-test-debugging-playbook` — when a test fails for a non-obvious reason, before touching a known-complex BC subsystem, or after 3 failed fix rounds on one scenario.
+- `al-prism-analysis` — optional, when the Prism for AL MCP is available: in mode `red` find subscribers on every table the tests insert into (all apps) with `find_references`; call `reload_workspace` after AL edits before further graph queries. Skip silently if Prism is unavailable.
 
 ### Mode `red`
 - Read `02-design.md` and `03-test-plan.md` (and `00-overview.md`, `01-requirements.md`, plus `04-implementation-log.md` if this is a retry). Read skill `al-test-conventions`.
