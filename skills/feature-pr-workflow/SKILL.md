@@ -47,9 +47,10 @@ git config user.email
 
 Ask the user for a branch name using `vscode_askQuestions`:
 - Suggest pattern: `Feature/<ShortName>` (e.g., `Feature/AddApiLogging`)
-- Create and checkout:
+- Create and checkout - **always from the default branch (`master`/`main`) as base, never from a release branch and never from the current branch**; the PR target chosen later (step 7) may be a release branch without changing the base:
   ```powershell
-  git checkout -b <branch-name>
+  git fetch origin
+  git checkout -b <branch-name> origin/<default-branch>
   ```
 
 ### 4. Stage Files for Commit
@@ -105,6 +106,7 @@ git push -u origin <branch-name>
 Ask the user which branch the PR should target, using `vscode_askQuestions`:
 - Options: `main`/`master` (the repo's default branch) and `release/*` or other active branches (e.g. list branches via `git branch -r` if helpful)
 - Store the answer as `<target-branch>` — it drives whether the source branch gets deleted (see step 9)
+- The target does NOT change the branch's base: the branch stays based on `master`/`main` even when the target is a release branch. If the branch was started from the release branch by mistake, do not push it - repair it first (see skill `al-delivery-deliver`, section "Base vs. target").
 
 ### 8. Create Azure DevOps Pull Request
 

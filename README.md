@@ -13,7 +13,7 @@ Agent Plugin für GitHub Copilot in VS Code: ein Team von Agenten, das eine Busi
 | AL TDD Implementer       | Test-first in drei getrennten Modi `red`, `green`, `refactor`                     | `04-implementation-log.md` |
 | AL Documentation Writer  | Anwenderdokumentation, Release Note, Testliste                                    | `05-user-documentation.md` |
 | AL Quality Reviewer      | Review mit BCQuality und AL Performance Analyzer                                  | `06-quality-review.md`     |
-| AL Delivery              | Branch, Commits, Squash, Push und Azure-DevOps-PR (`branch`, `commit`, `deliver`) | `07-delivery.md`           |
+| AL Delivery              | Branch (Basis immer master/main, PR-Ziel kann ein Release-Branch sein), Commits, Squash, Push und Azure-DevOps-PR (`branch`, `commit`, `deliver`) | `07-delivery.md`           |
 | AL Container Provisioner | BC-Sandbox-Container über COSMO Alpaca prüfen, starten, anlegen                   | -                          |
 | AL Code Explainer        | Eigenständig, nicht im Ablauf: Standard-Code und Anpassungen für Anwender und Entwickler erklären (Text, Mermaid) | `docs/code-analysis/<thema>/` |
 
