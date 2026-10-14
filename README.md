@@ -15,6 +15,7 @@ Agent Plugin für GitHub Copilot in VS Code: ein Team von Agenten, das eine Busi
 | AL Quality Reviewer      | Review mit BCQuality und AL Performance Analyzer                                  | `06-quality-review.md`     |
 | AL Delivery              | Branch, Commits, Squash, Push und Azure-DevOps-PR (`branch`, `commit`, `deliver`) | `07-delivery.md`           |
 | AL Container Provisioner | BC-Sandbox-Container über COSMO Alpaca prüfen, starten, anlegen                   | -                          |
+| AL Code Explainer        | Eigenständig, nicht im Ablauf: Standard-Code und Anpassungen für Anwender und Entwickler erklären (Text, Mermaid) | `docs/code-analysis/<thema>/` |
 
 Ablauf: Requirements, Design, Test Plan, Implementierung (RED, GREEN, optional Refactor), Dokumentation, Quality Review, Delivery. Zwei Gates werden nie übersprungen: vor der Implementierung und vor dem Push/PR.
 
@@ -51,6 +52,7 @@ Die Hooks gelten nur für den lokalen Harness, nicht für Copilot-CLI- oder Clou
 | AL Orchestrator                       | `PreToolUse`   | darf nur `00-overview.md` bearbeiten, kein schreibendes Git                                                                                                |
 | AL Quality Reviewer                   | `PreToolUse`   | kein `fix_al_file`/`fix_al_workspace`, nur `06-quality-review.md` bearbeiten                                                                               |
 | AL Container Provisioner              | `PreToolUse`   | nur `launch.json` bearbeiten, kein schreibendes Git, kein `docker run`                                                                                     |
+| AL Code Explainer                     | `PreToolUse`   | nur Markdown unter `docs/code-analysis/` bearbeiten                                                                                                        |
 
 Der Stop-Check blockiert pro Beendigung höchstens einmal (`stop_hook_active`). Das Skript läuft bei internen Fehlern ohne Blockade weiter. Entscheidungen stehen in `%TEMP%\al-agent-team-hooks.log`. Mit der Umgebungsvariable `AL_HOOK_DEBUG=1` wird jeder Aufruf protokolliert, so lassen sich echte Tool-Namen und Eingaben prüfen.
 
