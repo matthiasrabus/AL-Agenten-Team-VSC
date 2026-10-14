@@ -138,6 +138,9 @@ const PROFILES = {
       /\bdocker\s+(run|compose)\b/.test(cmd) ? ['deny', 'No local Docker fallback; use the COSMO Alpaca container tools.'] : null,
     onlyFiles(/(^|\/)launch\.json$/i, 'launch.json'),
   ],
+  explainer: [
+    onlyFiles(/(^|\/)docs\/code-analysis\/.+\.md$/i, 'markdown files under docs/code-analysis/'),
+  ],
 };
 
 // ---------- stop / subagent stop ----------
