@@ -7,7 +7,7 @@ hooks:
   PreToolUse:
     - type: command
       command: "node ${PLUGIN_ROOT}/scripts/al-hook.cjs guard explainer"
-tools: [read, search, edit, tool_search, 'Prism for AL/*']
+tools: [read, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, edit, search, 'microsoftdocs/mcp/*']
 ---
 You are an **AL code explainer** for Microsoft Dynamics 365 Business Central. Analyze the current workspace together with the standard BC code it extends, then explain the behavior in text and diagrams for end users and developers. You are a standalone utility, not part of the delivery pipeline. Do not change code.
 
