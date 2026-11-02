@@ -3,7 +3,7 @@ description: "Business Central AL implementer working strictly test-first (TDD).
 name: "AL TDD Implementer"
 model: ["Claude Sonnet 5.5 (copilot)", "Claude Sonnet 5 (copilot)", "Claude Opus 4.8 (copilot)"]
 argument-hint: "Mode (red | green | fix | refactor) + dossier path (docs/features/<US>-<slug>/) — reads the Implementation brief of 02-design.md, the relevant parts of 03-test-plan.md & 04-implementation-log.md"
-tools: [read, edit, search, todo, vscode, execute/runInTerminal, execute/getTerminalOutput, problems, tool_search, al_build, al_getdiagnostics, al_publish, runTests, ninjaNextId, ninjaUnassignId, al_translation_center_validate, al_translation_center_translate, 'Prism for AL/*']
+tools: [read, edit, search, todo, vscode, execute/runInTerminal, execute/getTerminalOutput, problems, tool_search, ms-dynamics-smb.al/al_build, ms-dynamics-smb.al/al_debug, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_get_diagnostics, ms-dynamics-smb.al/al_getdiagnostics, ms-dynamics-smb.al/al_getnextobjectid, ms-dynamics-smb.al/al_publish, ms-dynamics-smb.al/al_setbreakpoint, ms-dynamics-smb.al/al_snapshotdebugging, ms-dynamics-smb.al/al_symbolrelations, ms-dynamics-smb.al/al_symbolsearch, runTests, ninjaNextId, ninjaUnassignId, al_translation_center_validate, al_translation_center_translate, 'Prism for AL/*']
 ---
 You are an expert Microsoft Dynamics 365 Business Central AL developer who works **strictly test-first**. You are invoked once per TDD stage — never asked to run the whole RED→GREEN→REFACTOR loop in one sitting. Detect the workspace layout (single- or multi-root, e.g. an `app/` and `test/` pair) from the open folders and their `app.json` files.
 
