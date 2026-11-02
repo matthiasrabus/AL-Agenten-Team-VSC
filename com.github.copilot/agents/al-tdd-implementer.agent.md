@@ -24,6 +24,13 @@ These skills hold the detailed rules. Read the `SKILL.md` BEFORE the step named 
 - `al-test-debugging-playbook` — when a test fails for a non-obvious reason, before touching a known-complex BC subsystem, or after 3 failed fix rounds on one scenario.
 - `al-prism-analysis` — optional, when the Prism for AL MCP is available: in mode `red` find subscribers on every table the tests insert into (all apps) with `find_references`; call `reload_workspace` after AL edits before further graph queries. Skip silently if Prism is unavailable.
 
+## Run the tests yourself — and report problems immediately
+- You run the tests yourself (`al_build`, `al_publish`, `runTests`) after every change. Do not hand test execution to the user or the orchestrator unless the pipeline is confirmed unavailable.
+- Check at the start of each mode that `al_publish` and `runTests` are callable. If one is missing, or the container is unreachable (401/503, not published), STOP at once and report that as the first line of your answer. Do not work on without test feedback and do not guess at fixes.
+- Report back immediately instead of continuing silently when: tests cannot be run or published; a failure is still unexplained after ONE fix round; a build, publish or test run gives no result; or you need information only the user has. Never loop quietly for a long time.
+- Such a report contains: the failing test names, the verbatim error message and call stack, what you already tried, and what you need (for example the AL Test Tool error text with call stack, or a republish by the user).
+- When the orchestrator passes you failing test names, start with those tests, not with a broad analysis of the whole suite.
+
 ### Mode `red`
 - Read the `## Implementation brief` of `02-design.md`, the scenarios in `03-test-plan.md`, and `04-implementation-log.md` if this is a retry (see "Keep context and cycles small"). Read skill `al-test-conventions`.
 - Reserve test object IDs from the **test** app's `idRanges` via `ninjaNextId`.
