@@ -39,6 +39,7 @@ $c = Import-Clixml "$env:USERPROFILE\.bc-test-cred.xml"; $env:BC_SERVER_USERNAME
 try { al runtests <codeunitId> --project <test-app-folder> [--testmethods <m1> <m2>] } finally { Remove-Item Env:BC_SERVER_USERNAME, Env:BC_SERVER_PASSWORD -ErrorAction SilentlyContinue }
 ```
 
+- "This AL extension version ... cannot be used with the specified server" means the global AL Tool is older than the server (e.g. server debugger 9.0, tool supports up to 7.0): `dotnet tool update -g microsoft.dynamics.businesscentral.development.tools --version <compiler version shown by the AL build in VS Code>` (verified: 18.0.43 -> 18.1.43.24897 fixed it against a BC 29 container).
 - Several codeunits in one connection: `--testgroups <file.json>` (`[{"codeunitId": 5000002, "testMethods": []}]`). Default output is structured JSON with per-method results; `--raw` prints the server log and a text summary.
 - ALWAYS run it via the terminal tool with a `timeout` (about 180000 ms). If it times out or needs input, STOP and report the exact command and message; do not poll or re-run in a loop.
 - No credential file (`Test-Path "$env:USERPROFILE\.bc-test-cred.xml"` is false) → do not try other ways to authenticate; hand test execution to the user (AL Test Tool) and tell them how to create the file.
